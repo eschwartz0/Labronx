@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
+import csv
+from pathlib import Path
 
 BG = "#ece3d2"
 FG = "#1c1c1c"
@@ -104,9 +106,22 @@ class App(tk.Tk):
         self.option_add("*TCombobox*Listbox.background", BG)
         self.option_add("*TCombobox*Listbox.foreground", FG)
 
+        self.stadium_dimensions = self._load_stadium_dimensions()
         self._build_topbar()
         self._build_header()
         self._build_body()
+
+    def _load_stadium_dimensions(self):
+        dimensions_file = Path(__file__).resolve().parents[1] / "data" / "Stadium_dimensions.csv"
+        dimensions = {}
+        with dimensions_file.open(newline="", encoding="utf-8") as stream:
+            for row in csv.DictReader(stream):
+                dimensions[row["Ballpark"]] = {
+                    "left": row["Left"].removesuffix(" ft"),
+                    "center": row["Center"].removesuffix(" ft"),
+                    "right": row["Right"].removesuffix(" ft"),
+                }
+        return dimensions
 
     # ---------------------------------------------------------- top bar
     def _build_topbar(self):
@@ -199,14 +214,14 @@ class App(tk.Tk):
         self.stadium_lbl.pack(fill="x", padx=10)
 
         self.stadium = StadiumCanvas(p)
-        self.stadium.pack(fill="both", expand=True, padx=8)
 
         self.wall_lbl = tk.Label(
             p, text="Wall heights: LF -- / CF -- / RF -- ft", bg=BG, fg=MUTED,
             font=font(8))
-        self.wall_lbl.pack(pady=(0, 0))
         tk.Label(p, text="Dimensions for the selected year", bg=BG, fg=MUTED,
-                 font=font(8)).pack(pady=(0, 8))
+                 font=font(8)).pack(side="bottom", pady=(0, 8))
+        self.wall_lbl.pack(side="bottom")
+        self.stadium.pack(fill="both", expand=True, padx=8)
 
     def _build_controls(self, body):
         side = tk.Frame(body, bg=BG)
@@ -224,9 +239,8 @@ class App(tk.Tk):
 
         specs = [
             ("Player", ["All Yankees"], 0, 0, "player"),
-            ("Stadium", ["All stadiums", "Yankee Stadium", "Fenway Park",
-                         "Camden Yards", "Tropicana Field",
-                         "Rogers Centre"], 0, 1, "stadium"),
+            ("Stadium", ["All stadiums"] + list(self.stadium_dimensions), 0, 1,
+             "stadium"),
             ("Season", ["2026", "2025", "2024", "2023", "2022", "2021","2020"],
              2, 0, "season"),
             ("Inning", ["All innings"] + [str(i) for i in range(1, 10)],
@@ -247,6 +261,9 @@ class App(tk.Tk):
             cb.grid(row=row + 1, column=col, sticky="ew",
                     padx=(0 if col == 0 else 6, 6))
             self.vars[key] = var
+            if key in ("stadium", "season"):
+                cb.bind("<<ComboboxSelected>>",
+                        lambda event: self.on_view_stadium())
 
         # buttons
         btns = tk.Frame(side, bg=BG)
@@ -302,6 +319,19 @@ class App(tk.Tk):
         season = self.vars["season"].get()
         self.stadium_lbl.config(
             text=f"[{stadium}]   Year: [{season}]")
+        selected_dimensions = self.stadium_dimensions.get(stadium)
+        if selected_dimensions is None:
+            self.stadium.set_dims()
+            #placeholder text if no stadium is selected
+            self.wall_lbl.config(text="Wall heights: LF -- / CF -- / RF -- ft")
+            return
+
+        left = selected_dimensions["left"]
+        center = selected_dimensions["center"]
+        right = selected_dimensions["right"]
+        self.stadium.set_dims(left, center, right)
+        self.wall_lbl.config(
+            text=f"Wall heights: LF {left} / CF {center} / RF {right} ft")
 
 
 if __name__ == "__main__":
