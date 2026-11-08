@@ -1,0 +1,56 @@
+{
+  "data": {
+    "source_pa_rows": 30685,
+    "completed_pa_records": 30685,
+    "duplicate_pa_rows": 0,
+    "unique_summary_keys": 12816,
+    "games": 810,
+    "home_runs": 1206,
+    "team_innings": 7189,
+    "team_runs": 3855,
+    "note": "Input is the existing completed-PA extract, not raw pitches. Pitch deduplication cannot be checked from this extract."
+  },
+  "benchmarks": {
+    "hash": {
+      "construction_ms": 396.791541,
+      "lookup_us": 0.5080415,
+      "memory_bytes": 84201336,
+      "stored_entries": 181818
+    },
+    "tree": {
+      "construction_ms": 744.636625,
+      "lookup_us": 1.5342705,
+      "memory_bytes": 65910804,
+      "stored_entries": 181818
+    },
+    "input_records": 181818,
+    "unique_keys": 181818,
+    "meets_100000_input_records": true,
+    "method": "Construction median of 3 builds; exact lookup median of 5 batches of 2000 keys (50% hits for nonempty data). Memory is deep retained Python object bytes including keys/values; not RSS. CSV reading and validation excluded. Full filtered-query time is separate.",
+    "scope": "MLB-wide 2021 regular-season completed plate appearances",
+    "record_unit": "completed plate appearance",
+    "scenario": "PA record index (context + team ID + game ID + PA number)",
+    "source_rows": 745619,
+    "deduplicated_pitch_keys": 712320,
+    "input_pa_records": 181818,
+    "unique_record_keys": 181818,
+    "unique_matchup_summary_keys": 75272,
+    "games": 2429,
+    "all_30_team_totals_match": true,
+    "source_sha256": "70cde84447e9515a1a7c2d11910d04bb40703a42c81ec6b3288e6e4d26d93494",
+    "meets_100000_stored_entries": true
+  },
+  "overall_statistics": {
+    "plate_appearances": 30685,
+    "home_runs": 1206,
+    "hr_rate": 0.03930259084243116,
+    "team_innings": 7189,
+    "average_runs": 0.5362359159827514,
+    "hr_inning_rate": 0.15009041591320071,
+    "query_ms": {
+      "hash": 39.47575,
+      "tree": 36.00725
+    },
+    "structures_match": true
+  }
+}

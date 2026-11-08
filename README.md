@@ -1,27 +1,43 @@
-# Project Starter
+# Yankees Matchup Analyzer
 
-A simple starting point for a group project.
+Team LaBronx's UF COP3530 desktop project, built with Python, Tkinter/ttk,
+Matplotlib, a custom separate-chaining hash table, and a custom red-black tree.
 
-## Structure
+## Run after cloning
 
-- `src/` - application source code
-- `tests/` - automated tests
-- `docs/` - project notes, requirements, and documentation
-- `scripts/` - setup or utility scripts
+```bash
+python3 -m pip install -r requirements.txt
+python3 src/gui.py
+```
 
-## Getting started
+Use a Python interpreter with Tkinter available. The data is bundled; running the
+app requires no Statcast download. Changing a filter refreshes both charts and
+statistics automatically.
 
-1. Add your project code in `src/`.
-2. Add tests in `tests/`.
-3. Write notes and planning docs in `docs/`.
-4. Use `scripts/` for automation or setup tasks.
+## Bundled application data
 
-This repository is intentionally minimal so the team can grow it in a consistent way.
+- `data/yankees_pa/yankees_plate_appearances.csv`: 30,685 completed Yankees PAs, 2021–2025.
+- `data/yankees_pa/yankees_innings.csv`: played Yankees batting innings and scoring.
+- `data/yankees_pa/game_venues.csv`: actual venues joined by game ID.
+- `data/yankees_pa/players.csv`: batter IDs and names.
+- `data/Stadium_dimensions.csv`: sourced season-specific distances and runs park factors.
+- `data/benchmark/mlb_plate_appearances.csv`: 181,818 real completed MLB PAs from 2021.
 
-## Sample matchup data
+The benchmark also requires its bundled `preparation_report.json`, which validates
+CSV integrity and records official PA/HR reconciliation for all 30 teams. Each
+custom structure stores 181,818 distinct benchmark records. Yankees analysis uses
+the separate five-season dataset. Source snapshots and validation reports are bundled.
 
-Run `py src/example.py` from this folder on Windows (or `python3 src/example.py`
-on macOS/Linux) to print five fictional matchups from `data/example_summaries.csv`.
-Each key uses `(player, stadium, season, inning, pitcher_hand, batter_hand)`;
-the value contains plate appearances and home runs. This example establishes
-a proposed shared data format for the upcoming tree and hash table.
+## Check correctness
+
+```bash
+python3 -m unittest discover -s tests -v
+python3 src/analyzer.py --require-records 100000
+python3 tests/gui_dynamic_smoke.py
+```
+
+The last command needs a desktop session. See [implementation and data provenance](docs/IMPLEMENTATION.md)
+for key definitions, statistics, measurement methods, and stadium sources.
+
+`src/example.py` and `data/example_summaries.csv` are an explicitly fictional format
+example; the application uses the real CSVs above.

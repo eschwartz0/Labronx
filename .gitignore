@@ -21,3 +21,12 @@ node_modules/
 # Environment files
 .env
 .env.*
+
+# Reproducible raw Statcast cache; validated benchmark CSV and source reports remain versionable
+/data/benchmark/raw/
+
+# Local acquisition tools and redundant download/trial caches
+/download_statcast.py
+/scripts/prepare_real_benchmark.py
+/data/yankees_pa/per_game/
+/data/yankees_pa/sample_*

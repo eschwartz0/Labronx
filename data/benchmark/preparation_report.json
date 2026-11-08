@@ -1,0 +1,566 @@
+{
+  "scope": "MLB-wide 2021 regular-season completed plate appearances",
+  "first_date": "2021-04-01",
+  "last_date": "2021-10-03",
+  "source_windows": [
+    {
+      "start": "2021-04-01",
+      "end": "2021-04-03",
+      "sha256": "a0cf1ad16f4c629a45d814777379dd18c3d50b7f2a6b973eb9ef034cc9b55dfd"
+    },
+    {
+      "start": "2021-04-04",
+      "end": "2021-04-06",
+      "sha256": "e2eef18eb1c5d84f953b39557eff26e84e2f08b5c58a32be8520ee349490730c"
+    },
+    {
+      "start": "2021-04-07",
+      "end": "2021-04-09",
+      "sha256": "b7b092c33e505b22307ad0a4a5f625eeb17ed2b327cf2ccdf4baea2010115748"
+    },
+    {
+      "start": "2021-04-10",
+      "end": "2021-04-12",
+      "sha256": "cdbb8a8c726afa6a6ac229c8682339a8a9dd321ec8605bf1a7493887cd521a83"
+    },
+    {
+      "start": "2021-04-13",
+      "end": "2021-04-15",
+      "sha256": "d0f8426a77b10ba50dada2d71afd3696c77923c7fdd2e3b1787799dc87094bac"
+    },
+    {
+      "start": "2021-04-16",
+      "end": "2021-04-18",
+      "sha256": "d70cb1b8163d1e17a6d079237bb40c9d502a4ec839d8c74c6c2bf5b4992e7907"
+    },
+    {
+      "start": "2021-04-19",
+      "end": "2021-04-21",
+      "sha256": "a1542ed3b2f1825d9954bd244cb25c63c923ee61aa7d4ad06e8dc80e1ff2ca70"
+    },
+    {
+      "start": "2021-04-22",
+      "end": "2021-04-24",
+      "sha256": "63b915a3c48de734a4a67ad82c5d7181e627df522e0ecb361d6487870eb29be1"
+    },
+    {
+      "start": "2021-04-25",
+      "end": "2021-04-27",
+      "sha256": "16204c1417e49ffa729ff4f109e2cf5adc4538a9f7a11519cc394f51fa26b63b"
+    },
+    {
+      "start": "2021-04-28",
+      "end": "2021-04-30",
+      "sha256": "b19a13874eddcfad7d71ba01e1f23b343c842d304ceb09a5a72400911b35963a"
+    },
+    {
+      "start": "2021-05-01",
+      "end": "2021-05-03",
+      "sha256": "a311de70859b931fdaa335f2e68af407b35d2f17daa50066f130f77a5e11503f"
+    },
+    {
+      "start": "2021-05-04",
+      "end": "2021-05-06",
+      "sha256": "5884e4d5635494cd8b08395dc2eafe8287f0bf43d7096b5636601e3e7a7ddf4f"
+    },
+    {
+      "start": "2021-05-07",
+      "end": "2021-05-09",
+      "sha256": "a081f270b04bb09700755e54d58ba8f0691ccc38bbe0a7228eb68049ba08ba9b"
+    },
+    {
+      "start": "2021-05-10",
+      "end": "2021-05-12",
+      "sha256": "134347cbbdadf27c4426fed0f1873e6109826997e6b1538b85d6b294252f322f"
+    },
+    {
+      "start": "2021-05-13",
+      "end": "2021-05-15",
+      "sha256": "b5247b1e333cfe92417b83e18fcb2567fa68b71971ee2f4ebbe0190c4f80ffd0"
+    },
+    {
+      "start": "2021-05-16",
+      "end": "2021-05-18",
+      "sha256": "b7dbaba29c716284bd57022c8cc1719aecd38cb61b9e4e94967ee15f9ff10c62"
+    },
+    {
+      "start": "2021-05-19",
+      "end": "2021-05-21",
+      "sha256": "9b2de1e53898850de61255abac08d83abb2eee8d0fa56dd6772ca38b9ab0283d"
+    },
+    {
+      "start": "2021-05-22",
+      "end": "2021-05-24",
+      "sha256": "d8da9883943425548446df472fc446de47c5e965e1268a743d0ccea3fe9696e7"
+    },
+    {
+      "start": "2021-05-25",
+      "end": "2021-05-27",
+      "sha256": "3d7c96b0187b1c5e15e071b4164493731baf1f743c86dcea9eafc1bbb8cf17cf"
+    },
+    {
+      "start": "2021-05-28",
+      "end": "2021-05-30",
+      "sha256": "fd770cfef492895e0132d3fdd2d81a49a040899abb94fdfb492feb215ed48b3e"
+    },
+    {
+      "start": "2021-05-31",
+      "end": "2021-06-02",
+      "sha256": "dad34421b841583f338ade1879ac3d47fbac073ea3a298c6d949224d3c3469da"
+    },
+    {
+      "start": "2021-06-03",
+      "end": "2021-06-05",
+      "sha256": "7eab361e808220d56580dd680f498d2a0bfcad28d697af437b7fedd509658aa7"
+    },
+    {
+      "start": "2021-06-06",
+      "end": "2021-06-08",
+      "sha256": "42783ec2a2f31c0b618762f185d1f1beb4496855890921703b1bd55e2463ea31"
+    },
+    {
+      "start": "2021-06-09",
+      "end": "2021-06-11",
+      "sha256": "51b1bb0aa0bd443639f9edd7394cecba7aaafff559e2ed4432f4ab7ccf90cc59"
+    },
+    {
+      "start": "2021-06-12",
+      "end": "2021-06-14",
+      "sha256": "3e2b7a537d5416c8c2c65005f11dcb593dc56138694a9b54fb6e5bf6f18f0633"
+    },
+    {
+      "start": "2021-06-15",
+      "end": "2021-06-17",
+      "sha256": "6f8743922ddbf3957835462d79b3cb14800d1a1419fc029a92d5373dfc3496bc"
+    },
+    {
+      "start": "2021-06-18",
+      "end": "2021-06-20",
+      "sha256": "720c283683fd2e5ff03ceeda2594c924fe1baf0fd28099c92dcef83f522d958f"
+    },
+    {
+      "start": "2021-06-21",
+      "end": "2021-06-23",
+      "sha256": "1aa87db7b6303f501fd8970843399964440fc365dbba22e2df0d67aa4f8843d9"
+    },
+    {
+      "start": "2021-06-24",
+      "end": "2021-06-26",
+      "sha256": "c82f62d05e33fa0c6573fc93166a5e20ffbf369def25b47740c22fef07e17263"
+    },
+    {
+      "start": "2021-06-27",
+      "end": "2021-06-29",
+      "sha256": "652d927f67c25453ef1bf83851ff7cff7bd2de657dec9a5e792598c82602628e"
+    },
+    {
+      "start": "2021-06-30",
+      "end": "2021-07-02",
+      "sha256": "5d761ae23bc4e7a01cc5d5eb0e5cf5649fbb4e9ea1dc09be0bc5f86ebe0df44c"
+    },
+    {
+      "start": "2021-07-03",
+      "end": "2021-07-05",
+      "sha256": "458ab31b696a4714e83a20df66ba22fad94490fc6564a10850ed2801ded984b9"
+    },
+    {
+      "start": "2021-07-06",
+      "end": "2021-07-08",
+      "sha256": "19a91e716dff176894435c58f0e1a4d961894439712e59fe9d135a2b2febbf24"
+    },
+    {
+      "start": "2021-07-09",
+      "end": "2021-07-11",
+      "sha256": "23d9a5de139ada17ddf3e81b9daa0eff447342cad82c5ea9a370ba41c234ccaa"
+    },
+    {
+      "start": "2021-07-15",
+      "end": "2021-07-17",
+      "sha256": "417a976a47f975e0dd6a26208c69342dbbba18e776cc796da049bcd43df03c0f"
+    },
+    {
+      "start": "2021-07-18",
+      "end": "2021-07-20",
+      "sha256": "ade9594452c7b37fd7f50a7110b9ffba2f095a60f49092a90e6ebfe7b1a9133c"
+    },
+    {
+      "start": "2021-07-21",
+      "end": "2021-07-23",
+      "sha256": "3375648a6f6172d2d621a7338b1a2083d03ed0efd4abce52c4c9aec686c6c4f1"
+    },
+    {
+      "start": "2021-07-24",
+      "end": "2021-07-26",
+      "sha256": "92ca481f661f8fc523222886150e108bb6a93b2febabd5e3797f86e5bbf413ac"
+    },
+    {
+      "start": "2021-07-27",
+      "end": "2021-07-29",
+      "sha256": "c861007b20a209d1ebc95a5721a150d7c050564998977a77de70d2f8d9916f7c"
+    },
+    {
+      "start": "2021-07-30",
+      "end": "2021-08-01",
+      "sha256": "7cf5383d6c8616a781800558339311d646630ff588e8ac5fb6aeaa4e03ad0e73"
+    },
+    {
+      "start": "2021-08-02",
+      "end": "2021-08-04",
+      "sha256": "f3f3059edb47a5933c1b6739cb2ebcb81186ccddddcb673a18cb631e64735c97"
+    },
+    {
+      "start": "2021-08-05",
+      "end": "2021-08-07",
+      "sha256": "d3a1f82c7149cb3ed978de9ce159d92b8b29ee4910b487b35fa06b9872bab385"
+    },
+    {
+      "start": "2021-08-08",
+      "end": "2021-08-10",
+      "sha256": "cc0b8ab53c7ccdd68ba7f6c2dca8b11ef237dbce7718252b6d0311474ec0eaf9"
+    },
+    {
+      "start": "2021-08-11",
+      "end": "2021-08-13",
+      "sha256": "c09d48f7d673c39aa0d650d3ecf61fa32f45ee797a6e613aa307701cc700f0fc"
+    },
+    {
+      "start": "2021-08-14",
+      "end": "2021-08-16",
+      "sha256": "c294efce0f9b790eef04dac7a764ce8703a8a93cf6947c08764db5e501d53c4e"
+    },
+    {
+      "start": "2021-08-17",
+      "end": "2021-08-19",
+      "sha256": "23a3e2ccaef36ba66a69ea97154b18492ab5e8590a4e6d57244c3af4f864b975"
+    },
+    {
+      "start": "2021-08-20",
+      "end": "2021-08-22",
+      "sha256": "1dfd59ff3f9da8050ee553caf950738bb6d457c38fc136f648b5a90aa9b2ff04"
+    },
+    {
+      "start": "2021-08-23",
+      "end": "2021-08-25",
+      "sha256": "f0cd5d8f880cca1602f9f6648051cc48c1668f05e50a7a10027dd7df27f3f539"
+    },
+    {
+      "start": "2021-08-26",
+      "end": "2021-08-28",
+      "sha256": "105824cfd4fc79af39c125c92beb90c7012205dcefa5c770d025473379299e3a"
+    },
+    {
+      "start": "2021-08-29",
+      "end": "2021-08-31",
+      "sha256": "8e7ae9782b44eec5ca41f6b770dfe023122f16b7617ca51a59b4db0cd38fcb73"
+    },
+    {
+      "start": "2021-09-01",
+      "end": "2021-09-03",
+      "sha256": "0f0e150bfcb4729c20aca48d4e027149719559fffabbe9b541975deac2461ee5"
+    },
+    {
+      "start": "2021-09-04",
+      "end": "2021-09-06",
+      "sha256": "e6001bc272c2f7a8cc13e2937c5ed5de8afae38bf8d8a2b96bd3c757c6b78c52"
+    },
+    {
+      "start": "2021-09-07",
+      "end": "2021-09-09",
+      "sha256": "5ea736b16b69e68772ada767e58c742ec8603c25d2cfc2ec7e19c15b5fff399e"
+    },
+    {
+      "start": "2021-09-10",
+      "end": "2021-09-12",
+      "sha256": "02c5c4bb86d472d3abf41ebedef23463e994a42d987b3323540dc988badace00"
+    },
+    {
+      "start": "2021-09-13",
+      "end": "2021-09-15",
+      "sha256": "91940e91a4ad55cd125c77068f70c10906c1ae58afdf8a29bf608010270528b7"
+    },
+    {
+      "start": "2021-09-16",
+      "end": "2021-09-18",
+      "sha256": "e4dbdddb6abe1af761cd2b3804d8e9c70868c6b6641cfdb20ae2f1f65e05d0d4"
+    },
+    {
+      "start": "2021-09-19",
+      "end": "2021-09-21",
+      "sha256": "2be0e8c57c348517bc90f83077163bd5655acec75041ed078882e13adf80a9ff"
+    },
+    {
+      "start": "2021-09-22",
+      "end": "2021-09-24",
+      "sha256": "bb7afb28daabf8432f7c26a3b3347f08e9758c52faf393de888da98338f693e0"
+    },
+    {
+      "start": "2021-09-25",
+      "end": "2021-09-27",
+      "sha256": "9f04d3bca4e2adcd2eade2968d12483935df61b0df49ec1bb0441f6ff5d6ff6e"
+    },
+    {
+      "start": "2021-09-28",
+      "end": "2021-09-30",
+      "sha256": "d3a0708da67fe97e511fd9f6965d41fc303ba2d088ab8f7bb4347b25d39f53dd"
+    },
+    {
+      "start": "2021-10-01",
+      "end": "2021-10-03",
+      "sha256": "37494716218d7881277f3e440b981a4b1825a9880071a80137b39a515668ccac"
+    }
+  ],
+  "scheduled_games": 2429,
+  "complete": true,
+  "source_rows": 745619,
+  "deduplicated_pitch_keys": 712320,
+  "duplicate_pitch_rows": 33299,
+  "completed_pa_records": 181818,
+  "downloaded_games": 2429,
+  "excluded_non_pa_events": {
+    "truncated_pa": 233
+  },
+  "official_reconciliation": [
+    {
+      "team_id": 108,
+      "team": "Los Angeles Angels",
+      "extracted_pa": 6016,
+      "official_pa": 6016,
+      "extracted_hr": 190,
+      "official_hr": 190
+    },
+    {
+      "team_id": 109,
+      "team": "Arizona Diamondbacks",
+      "extracted_pa": 6144,
+      "official_pa": 6144,
+      "extracted_hr": 144,
+      "official_hr": 144
+    },
+    {
+      "team_id": 110,
+      "team": "Baltimore Orioles",
+      "extracted_pa": 5983,
+      "official_pa": 5983,
+      "extracted_hr": 195,
+      "official_hr": 195
+    },
+    {
+      "team_id": 111,
+      "team": "Boston Red Sox",
+      "extracted_pa": 6122,
+      "official_pa": 6122,
+      "extracted_hr": 219,
+      "official_hr": 219
+    },
+    {
+      "team_id": 112,
+      "team": "Chicago Cubs",
+      "extracted_pa": 5972,
+      "official_pa": 5972,
+      "extracted_hr": 210,
+      "official_hr": 210
+    },
+    {
+      "team_id": 113,
+      "team": "Cincinnati Reds",
+      "extracted_pa": 6162,
+      "official_pa": 6162,
+      "extracted_hr": 222,
+      "official_hr": 222
+    },
+    {
+      "team_id": 114,
+      "team": "Cleveland Indians",
+      "extracted_pa": 5907,
+      "official_pa": 5907,
+      "extracted_hr": 203,
+      "official_hr": 203
+    },
+    {
+      "team_id": 115,
+      "team": "Colorado Rockies",
+      "extracted_pa": 6007,
+      "official_pa": 6007,
+      "extracted_hr": 182,
+      "official_hr": 182
+    },
+    {
+      "team_id": 116,
+      "team": "Detroit Tigers",
+      "extracted_pa": 5979,
+      "official_pa": 5979,
+      "extracted_hr": 179,
+      "official_hr": 179
+    },
+    {
+      "team_id": 117,
+      "team": "Houston Astros",
+      "extracted_pa": 6291,
+      "official_pa": 6291,
+      "extracted_hr": 221,
+      "official_hr": 221
+    },
+    {
+      "team_id": 118,
+      "team": "Kansas City Royals",
+      "extracted_pa": 5993,
+      "official_pa": 5993,
+      "extracted_hr": 163,
+      "official_hr": 163
+    },
+    {
+      "team_id": 119,
+      "team": "Los Angeles Dodgers",
+      "extracted_pa": 6239,
+      "official_pa": 6239,
+      "extracted_hr": 237,
+      "official_hr": 237
+    },
+    {
+      "team_id": 120,
+      "team": "Washington Nationals",
+      "extracted_pa": 6113,
+      "official_pa": 6113,
+      "extracted_hr": 182,
+      "official_hr": 182
+    },
+    {
+      "team_id": 121,
+      "team": "New York Mets",
+      "extracted_pa": 5856,
+      "official_pa": 5856,
+      "extracted_hr": 176,
+      "official_hr": 176
+    },
+    {
+      "team_id": 133,
+      "team": "Oakland Athletics",
+      "extracted_pa": 6104,
+      "official_pa": 6104,
+      "extracted_hr": 199,
+      "official_hr": 199
+    },
+    {
+      "team_id": 134,
+      "team": "Pittsburgh Pirates",
+      "extracted_pa": 5983,
+      "official_pa": 5983,
+      "extracted_hr": 124,
+      "official_hr": 124
+    },
+    {
+      "team_id": 135,
+      "team": "San Diego Padres",
+      "extracted_pa": 6119,
+      "official_pa": 6119,
+      "extracted_hr": 180,
+      "official_hr": 180
+    },
+    {
+      "team_id": 136,
+      "team": "Seattle Mariners",
+      "extracted_pa": 6010,
+      "official_pa": 6010,
+      "extracted_hr": 199,
+      "official_hr": 199
+    },
+    {
+      "team_id": 137,
+      "team": "San Francisco Giants",
+      "extracted_pa": 6196,
+      "official_pa": 6196,
+      "extracted_hr": 241,
+      "official_hr": 241
+    },
+    {
+      "team_id": 138,
+      "team": "St. Louis Cardinals",
+      "extracted_pa": 6001,
+      "official_pa": 6001,
+      "extracted_hr": 198,
+      "official_hr": 198
+    },
+    {
+      "team_id": 139,
+      "team": "Tampa Bay Rays",
+      "extracted_pa": 6213,
+      "official_pa": 6213,
+      "extracted_hr": 222,
+      "official_hr": 222
+    },
+    {
+      "team_id": 140,
+      "team": "Texas Rangers",
+      "extracted_pa": 5943,
+      "official_pa": 5943,
+      "extracted_hr": 167,
+      "official_hr": 167
+    },
+    {
+      "team_id": 141,
+      "team": "Toronto Blue Jays",
+      "extracted_pa": 6070,
+      "official_pa": 6070,
+      "extracted_hr": 262,
+      "official_hr": 262
+    },
+    {
+      "team_id": 142,
+      "team": "Minnesota Twins",
+      "extracted_pa": 6078,
+      "official_pa": 6078,
+      "extracted_hr": 228,
+      "official_hr": 228
+    },
+    {
+      "team_id": 143,
+      "team": "Philadelphia Phillies",
+      "extracted_pa": 6089,
+      "official_pa": 6089,
+      "extracted_hr": 198,
+      "official_hr": 198
+    },
+    {
+      "team_id": 144,
+      "team": "Atlanta Braves",
+      "extracted_pa": 6056,
+      "official_pa": 6056,
+      "extracted_hr": 239,
+      "official_hr": 239
+    },
+    {
+      "team_id": 145,
+      "team": "Chicago White Sox",
+      "extracted_pa": 6084,
+      "official_pa": 6084,
+      "extracted_hr": 190,
+      "official_hr": 190
+    },
+    {
+      "team_id": 146,
+      "team": "Miami Marlins",
+      "extracted_pa": 5929,
+      "official_pa": 5929,
+      "extracted_hr": 158,
+      "official_hr": 158
+    },
+    {
+      "team_id": 147,
+      "team": "New York Yankees",
+      "extracted_pa": 6060,
+      "official_pa": 6060,
+      "extracted_hr": 222,
+      "official_hr": 222
+    },
+    {
+      "team_id": 158,
+      "team": "Milwaukee Brewers",
+      "extracted_pa": 6099,
+      "official_pa": 6099,
+      "extracted_hr": 194,
+      "official_hr": 194
+    }
+  ],
+  "all_teams_match": true,
+  "output_sha256": "70cde84447e9515a1a7c2d11910d04bb40703a42c81ec6b3288e6e4d26d93494"
+}

@@ -1,7 +1,16 @@
 import tkinter as tk
-from tkinter import ttk
-import csv
+from tkinter import ttk, messagebox
 from pathlib import Path
+import argparse
+import queue
+import threading
+import webbrowser
+
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from analyzer import Analyzer, Dataset, DEFAULT_DATA
+from models import Filters
+from charts import make_figure, empty_chart, stadium_chart, inning_chart
+from stadium_metadata import StadiumMetadata, fence_points
 
 BG = "#ece3d2"
 FG = "#1c1c1c"
@@ -20,80 +29,73 @@ class Panel(tk.Frame):
                          highlightcolor=LINE, highlightthickness=2)
         tk.Label(self, text=title, bg=BG, fg=FG, font=font(11, "bold"),
                  anchor="w").pack(fill="x", padx=10, pady=(10, 4))
-class PlaceholderChart(tk.Canvas):
-    """Big X on a chart as a placeholder"""
-
+class PerformanceChart(tk.Frame):
     def __init__(self, master, caption):
-        super().__init__(master, bg=BG, highlightthickness=0)
-        self.caption = caption
-        self.bind("<Configure>", self.redraw)
+        super().__init__(master, bg=BG)
+        tk.Label(self, text=caption, bg=BG, fg=MUTED, font=font(7),
+                 wraplength=270, justify='left').pack(fill='x', padx=5)
+        self.figure = make_figure()
+        empty_chart(self.figure, 'Loading historical data…')
+        self.canvas = FigureCanvasTkAgg(self.figure, master=self)
+        self.canvas.get_tk_widget().pack(fill='both', expand=True)
 
-    def redraw(self, _event=None):
-        self.delete("all")
-        w, h = self.winfo_width(), self.winfo_height()
-        m = 4
-        self.create_line(m, m, w - m, h - m, fill=LINE, width=1)
-        self.create_line(w - m, m, m, h - m, fill=LINE, width=1)
-        self.create_text(w / 2, h / 2, text=self.caption, fill=MUTED,
-                         font=font(9), tags="cap")
-        # background patch so the caption stays readable over the X
-        bbox = self.bbox("cap")
-        if bbox:
-            pad = 6
-            r = self.create_rectangle(bbox[0] - pad, bbox[1] - 2,
-                                      bbox[2] + pad, bbox[3] + 2,
-                                      fill=BG, outline=BG)
-            self.tag_lower(r, "cap")
+    def refresh(self):
+        self.canvas.draw_idle()
 
 
 class StadiumCanvas(tk.Canvas):
     def __init__(self, master):
         super().__init__(master, bg=BG, highlightthickness=0, height=130)
         self.lf = self.cf = self.rf = "--"
+        self.left_gap = self.right_gap = None
         self.bind("<Configure>", self.redraw)
 
-    def set_dims(self, lf="--", cf="--", rf="--"):
+    def set_dims(self, lf="--", cf="--", rf="--", left_gap=None, right_gap=None):
         self.lf, self.cf, self.rf = lf, cf, rf
+        self.left_gap, self.right_gap = left_gap, right_gap
         self.redraw()
 
     def redraw(self, _event=None):
         self.delete("all")
         w, h = self.winfo_width(), self.winfo_height()
         cx = w / 2
-        home_y = h - 8
-        r = min(w * 0.38, h - 40)
-        left = (cx - r * 0.95, home_y - r * 0.62)
-        right = (cx + r * 0.95, home_y - r * 0.62)
-        top_y = home_y - r
-
-        # foul lines
-        self.create_line(cx, home_y, *left, fill=LINE, width=1)
-        self.create_line(cx, home_y, *right, fill=LINE, width=1)
-        # outfield wall (arc)
-        self.create_arc(cx - r * 1.15, home_y - r * 1.5, cx + r * 1.15,
-                        home_y + r * 0.8, start=38, extent=104,
-                        style="arc", outline=LINE, width=1)
-        # infield diamond
-        d = r * 0.38
+        home_y = h - 10
+        known = self.lf != '--' and self.cf != '--' and self.rf != '--'
+        profile = fence_points(self.lf if known else 330, self.cf if known else 400,
+                               self.rf if known else 330,
+                               self.left_gap if known else None, self.right_gap if known else None)
+        # A shared feet-to-pixels scale makes changes in distances visible. The five
+        # rays are an illustrative profile, not the source's surveyed fence geometry.
+        scale = max(.01, min((w - 95) / 650, (h - 36) / 460))
+        points = [(cx + x * scale, home_y - y * scale) for x, y in profile]
+        wall = [coordinate for point in points for coordinate in point]
+        self.create_polygon(cx, home_y, *wall, fill='#e1ddca', outline=LINE, width=1)
+        self.create_line(*wall, fill=LINE, width=2, tags='fence')
+        left, right = points[0], points[-1]
+        d = 90 * scale / 2 ** .5
         self.create_polygon(cx, home_y, cx - d, home_y - d, cx,
                             home_y - 2 * d, cx + d, home_y - d,
                             outline=LINE, fill="", width=1)
         # labels
-        self.create_text(left[0] - 4, left[1] - 14, text=f"LF: {self.lf} ft",
-                         font=font(8), fill=FG, anchor="e")
-        self.create_text(right[0] + 4, right[1] - 14, text=f"RF: {self.rf} ft",
-                         font=font(8), fill=FG, anchor="w")
-        self.create_text(cx, max(top_y - 12, 8), text=f"CF: {self.cf} ft",
+        self.create_text(left[0], left[1] - 12, text=f"LF: {self.lf} ft",
+                         font=font(8), fill=FG)
+        self.create_text(right[0], right[1] - 12, text=f"RF: {self.rf} ft",
+                         font=font(8), fill=FG)
+        self.create_text(cx, max(points[2][1] - 12, 8), text=f"CF: {self.cf} ft",
                          font=font(8), fill=FG)
 
 
 class App(tk.Tk):
-    def __init__(self):
+    def __init__(self, data_dir=DEFAULT_DATA):
         super().__init__()
         self.title("LaBronx Bombers - Yankees Matchup Analyzer")
         self.configure(bg=BG)
         self.geometry("1000x680")
         self.minsize(900, 620)
+        self.analyzer = None
+        self._refresh_after_id = None
+        self.data_dir = Path(data_dir)
+        self._load_queue = queue.Queue()
 
         style = ttk.Style(self)
         style.theme_use("clam")
@@ -111,23 +113,18 @@ class App(tk.Tk):
         self._build_header()
         tk.Label(
             self,
-            text="* Park factor is a measure of how a stadium affects offense, where 100 is average",
+            text="Historical results, not predictions. Stadium distances and park factors include source years.",
             bg=BG, fg=MUTED, font=font(8), anchor="e",
         ).pack(side="bottom", anchor="e", padx=14, pady=(0, 8))
         self._build_body()
+        self.status = tk.StringVar(value='Loading CSVs and comparing both data structures…')
+        tk.Label(self, textvariable=self.status, bg=BG, fg=MUTED, font=font(8),
+                 anchor='w', wraplength=950).pack(fill='x', padx=14, pady=(0, 5))
+        threading.Thread(target=self._load_backend, daemon=True).start()
+        self.after(100, self._poll_backend)
 
     def _load_stadium_dimensions(self):
-        dimensions_file = Path(__file__).resolve().parents[1] / "data" / "Stadium_dimensions.csv"
-        dimensions = {}
-        with dimensions_file.open(newline="", encoding="utf-8") as stream:
-            for row in csv.DictReader(stream):
-                dimensions[row["Ballpark"]] = {
-                    "left": row["Left"].removesuffix(" ft"),
-                    "center": row["Center"].removesuffix(" ft"),
-                    "right": row["Right"].removesuffix(" ft"),
-                    "park_factor": (row.get("Park Factor") or "").strip(),
-                }
-        return dimensions
+        return StadiumMetadata()
 
     # ---------------------------------------------------------- top bar
     def _build_topbar(self):
@@ -166,13 +163,13 @@ class App(tk.Tk):
         # chart panels
         p = Panel(body, "Performance by Stadium")
         p.grid(row=0, column=0, sticky="nsew", padx=(0, 8), pady=(0, 8))
-        PlaceholderChart(p, "Player or team comparison").pack(
-            fill="both", expand=True, padx=8, pady=(0, 8))
+        self.stadium_chart = PerformanceChart(p, "Selected filters · top 7 matching venues by PA")
+        self.stadium_chart.pack(fill="both", expand=True, padx=4, pady=(0, 4))
 
         p = Panel(body, "Performance by Inning")
         p.grid(row=0, column=1, sticky="nsew", padx=(8, 8), pady=(0, 8))
-        PlaceholderChart(p, "Player or team comparison").pack(
-            fill="both", expand=True, padx=8, pady=(0, 8))
+        self.inning_chart = PerformanceChart(p, "Selected filters · matching innings and PA counts")
+        self.inning_chart.pack(fill="both", expand=True, padx=4, pady=(0, 4))
 
         self._build_ds_panel(body)
         self._build_stadium_panel(body)
@@ -204,9 +201,9 @@ class App(tk.Tk):
                 lbl.grid(row=r, column=c)
                 self.ds_vals[(m, c)] = lbl
 
-        tk.Label(p, text="Same summaries; 100,000+ records", bg=BG, fg=MUTED,
-                 font=font(7), anchor="w").pack(side="bottom", fill="x",
-                                                padx=10, pady=8)
+        self.record_label = tk.Label(p, text="Loading actual record counts…", bg=BG, fg=MUTED,
+                                    font=font(7), anchor="w", justify='left', wraplength=290)
+        self.record_label.pack(side="bottom", fill="x", padx=10, pady=8)
         tk.Frame(p, bg="#b8ae9a", height=1).pack(side="bottom", fill="x",
                                                  padx=10)
 
@@ -216,7 +213,7 @@ class App(tk.Tk):
 
         self.stadium_lbl = tk.Label(
             p, text="[Selected stadium]   Year: [year]", bg=BG, fg=MUTED,
-            font=font(8), anchor="w")
+            font=font(8), anchor="w", justify='left', wraplength=270)
         self.stadium_lbl.pack(fill="x", padx=10)
 
         self.stadium = StadiumCanvas(p)
@@ -224,7 +221,14 @@ class App(tk.Tk):
         self.park_factor_lbl = tk.Label(
             p, text="Park factor*: --", bg=BG, fg=MUTED,
             font=font(8))
+        self.park_factor_lbl.configure(wraplength=270)
         self.park_factor_lbl.pack(side="bottom")
+        self.stadium_source_lbl = tk.Label(p, text='', bg=BG, fg=MUTED, font=font(7),
+                                           cursor='hand2', wraplength=270)
+        self.stadium_source_lbl.pack(side='bottom', fill='x')
+        self._stadium_source_url = self._factor_source_url = None
+        self.stadium_source_lbl.bind('<Button-1>', lambda event: self._open_source(self._stadium_source_url))
+        self.park_factor_lbl.bind('<Button-1>', lambda event: self._open_source(self._factor_source_url))
         self.stadium.pack(fill="both", expand=True, padx=8)
 
     def _build_controls(self, body):
@@ -243,17 +247,18 @@ class App(tk.Tk):
 
         specs = [
             ("Player", ["All Yankees"], 0, 0, "player"),
-            ("Stadium", ["All stadiums"] + list(self.stadium_dimensions), 0, 1,
+            ("Stadium", ["All stadiums"], 0, 1,
              "stadium"),
-            ("Season", ["2026", "2025", "2024", "2023", "2022", "2021","2020"],
+            ("Season", ["All seasons"],
              2, 0, "season"),
-            ("Inning", ["All innings"] + [str(i) for i in range(1, 10)],
+            ("Inning", ["All innings"],
              2, 1, "inning"),
             ("Pitcher handedness", ["All", "Left", "Right"], 4, 0, "pitcher"),
-            ("Batter handedness", ["All", "Left", "Right", "Switch"], 4, 1,
+            ("Batter side", ["All", "Left", "Right"], 4, 1,
              "batter"),
         ]
         self.vars = {}
+        self.comboboxes = {}
         for label, values, row, col, key in specs:
             tk.Label(grid, text=label, bg=BG, fg=FG, font=font(9, "bold"),
                      anchor="w").grid(row=row, column=col, sticky="w",
@@ -265,9 +270,12 @@ class App(tk.Tk):
             cb.grid(row=row + 1, column=col, sticky="ew",
                     padx=(0 if col == 0 else 6, 6))
             self.vars[key] = var
-            if key in ("stadium", "season"):
-                cb.bind("<<ComboboxSelected>>",
-                        lambda event: self.on_view_stadium())
+            self.comboboxes[key] = cb
+
+        # Observe the values, so mouse/keyboard selections and programmatic filter
+        # changes all use the same refresh path. Coalesce quick changes into one query.
+        for var in self.vars.values():
+            var.trace_add('write', self._on_filter_change)
 
         # buttons
         btns = tk.Frame(side, bg=BG)
@@ -308,35 +316,134 @@ class App(tk.Tk):
         tk.Frame(stats, bg="#b8ae9a", height=1).grid(
             row=len(rows) * 2, column=0, columnspan=2, sticky="ew")
 
-        tk.Label(side, text="Results reflect the selected filters.", bg=BG,
-                 fg=MUTED, font=font(8), anchor="w").pack(fill="x", pady=10)
+        tk.Label(side, text="HR rate uses all filters. Team innings use\nstadium, season and inning only.", bg=BG,
+                 fg=MUTED, font=font(8), anchor="w", justify='left').pack(fill="x", pady=10)
 
     # --------------------------------------------------------- handlers
+    def _on_filter_change(self, *_args):
+        if self.analyzer is None:
+            return
+        if self._refresh_after_id is not None:
+            self.after_cancel(self._refresh_after_id)
+        self._refresh_after_id = self.after(100, self.on_analyze)
+
     def on_analyze(self):
-        """Hook: run the analysis using self.vars and fill in the results."""
-        filters = {k: v.get() for k, v in self.vars.items()}
-        print("Analyze:", filters)
+        if self._refresh_after_id is not None:
+            self.after_cancel(self._refresh_after_id)
+            self._refresh_after_id = None
+        if self.analyzer is None:
+            return
+        try:
+            filters = self._filters()
+            result = self.analyzer.analyze(filters)
+            percentage = lambda value: 'N/A' if value is None else f'{100 * value:.2f}%'
+            self.stat_vals['Home-run rate'].config(text=percentage(result['hr_rate']))
+            self.stat_vals['Matching sample size'].config(text=f"{result['plate_appearances']:,} PA")
+            average = result['average_runs']
+            self.stat_vals['Average runs per inning'].config(text='N/A' if average is None else f'{average:.3f}')
+            self.stat_vals['Team innings with at least\none home run (%)'].config(
+                text=percentage(result['hr_inning_rate']))
+            stadium_chart(self.stadium_chart.figure, result['stadium_groups'],
+                          self.analyzer.dataset.venues, filters.stadium_id)
+            inning_chart(self.inning_chart.figure, result['inning_groups'], filters.inning)
+            self.stadium_chart.refresh()
+            self.inning_chart.refresh()
+            self.status.set(f"Both structures agree: {result['home_runs']:,} HR / "
+                            f"{result['plate_appearances']:,} PA. Team context: {result['team_innings']:,} innings. "
+                            f"Filtered query: hash {result['query_ms']['hash']:.1f} ms, "
+                            f"tree {result['query_ms']['tree']:.1f} ms.")
+            self.on_view_stadium()
+        except Exception as exc:
+            self.status.set(f'Analysis failed: {exc}')
+            messagebox.showerror('Analysis failed', str(exc), parent=self)
+
+    def _filters(self):
+        hand = {'All': None, 'Left': 'L', 'Right': 'R'}
+        season, inning = self.vars['season'].get(), self.vars['inning'].get()
+        return Filters(self.player_ids.get(self.vars['player'].get()),
+                       self.stadium_ids.get(self.vars['stadium'].get()),
+                       None if season == 'All seasons' else int(season),
+                       None if inning == 'All innings' else int(inning),
+                       hand[self.vars['pitcher'].get()], hand[self.vars['batter'].get()])
+
+    def _load_backend(self):
+        try:
+            dataset = Dataset.load(self.data_dir)
+            self._load_queue.put(Analyzer(dataset, benchmark_dir=self.data_dir.parent / 'benchmark'))
+        except Exception as exc:
+            self._load_queue.put(exc)
+
+    def _poll_backend(self):
+        try:
+            result = self._load_queue.get_nowait()
+        except queue.Empty:
+            self.after(100, self._poll_backend)
+            return
+        if isinstance(result, Exception):
+            self.status.set(f'Unable to load data: {result}')
+            for chart in (self.stadium_chart, self.inning_chart):
+                empty_chart(chart.figure, 'Data unavailable\nSee the status message below')
+                chart.refresh()
+            return
+        self.analyzer = result
+        dataset = result.dataset
+        self.player_ids = {f'{name} ({player})': player for player, name in dataset.players.items()}
+        self.stadium_ids = {f'{name} [{stadium}]': stadium for stadium, name in dataset.venues.items()}
+        choices = {'player': ['All Yankees'] + sorted(self.player_ids),
+                   'stadium': ['All stadiums'] + sorted(self.stadium_ids),
+                   'season': ['All seasons'] + [str(year) for year in reversed(dataset.seasons)],
+                   'inning': ['All innings'] + list(map(str, dataset.inning_numbers))}
+        for key, values in choices.items():
+            self.comboboxes[key].config(values=values)
+        for column, name in [(1, 'hash'), (2, 'tree')]:
+            metrics = result.metrics[name]
+            self.ds_vals[('Construction time', column)].config(text=f"{metrics['construction_ms']:.1f} ms")
+            self.ds_vals[('Lookup time', column)].config(text=f"{metrics['lookup_us']:.2f} µs")
+            self.ds_vals[('Memory usage', column)].config(text=f"{metrics['memory_bytes'] / 1048576:.2f} MiB")
+        metrics = result.metrics
+        if metrics.get('meets_100000_stored_entries'):
+            counts = (f"MLB 2021 benchmark: {metrics['input_records']:,} PAs / keys\n"
+                      f"Yankees app: {len(dataset.entries):,} PAs · {len(result.hash_table):,} summaries")
+        else:
+            counts = f"{metrics['input_records']:,} input PAs · {metrics['unique_keys']:,} keys"
+        self.record_label.config(text=counts)
+        self.on_analyze()
+
+    def _open_source(self, url):
+        if url and url.startswith('https://'):
+            webbrowser.open(url)
 
     def on_view_stadium(self):
         """Hook: update the Stadium Window for the selected stadium/year."""
         stadium = self.vars["stadium"].get()
         season = self.vars["season"].get()
-        self.stadium_lbl.config(
-            text=f"[{stadium}]   Year: [{season}]")
-        selected_dimensions = self.stadium_dimensions.get(stadium)
-        if selected_dimensions is None:
+        stadium_id = getattr(self, 'stadium_ids', {}).get(stadium)
+        preview = stadium_id is None
+        if preview:
+            stadium_id = 3313  # Explicit default preview while analysis covers all parks.
+        selected = self.stadium_dimensions.resolve(stadium_id, int(season) if season.isdigit() else None)
+        self._stadium_source_url = self._factor_source_url = None
+        if selected is None:
+            self.stadium_lbl.config(text=f'{stadium}\nYear: {season}')
             self.stadium.set_dims()
-            #placeholder text if no stadium is selected
-            self.park_factor_lbl.config(text="Park factor: --")
+            self.park_factor_lbl.config(text='No source for this venue/year')
+            self.stadium_source_lbl.config(text='Select a season when this park was used')
             return
-
-        left = selected_dimensions["left"]
-        center = selected_dimensions["center"]
-        right = selected_dimensions["right"]
-        self.stadium.set_dims(left, center, right)
-        park_factor = selected_dimensions["park_factor"] or "--"
-        self.park_factor_lbl.config(text=f"Park factor: {park_factor}")
+        year = selected['valid_from_year']
+        label = selected['Ballpark'] + (' (preview)' if preview else '')
+        self.stadium_lbl.config(text=f"{label}\nDimensions: {year}"
+                               + (' (latest; analysis uses all seasons)' if season == 'All seasons' else ''))
+        self.stadium.set_dims(selected['Left'], selected['Center'], selected['Right'],
+                              selected['Left_Center'], selected['Right_Center'])
+        self._stadium_source_url = selected['dimensions_source_url']
+        self._factor_source_url = selected['park_factor_source_url']
+        self.stadium_source_lbl.config(text=f"{selected['dimensions_basis']} · schematic\nSource ↗")
+        factor = selected['Park Factor']
+        self.park_factor_lbl.config(text=f'Runs park factor: {factor} ({year}; 100 = avg) ↗'
+                                   if factor else f'Runs park factor: unavailable for {year}')
 
 
 if __name__ == "__main__":
-    App().mainloop()
+    parser = argparse.ArgumentParser(description='LaBronx desktop Yankees Matchup Analyzer')
+    parser.add_argument('--data-dir', type=Path, default=DEFAULT_DATA)
+    App(parser.parse_args().data_dir).mainloop()

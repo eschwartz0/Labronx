@@ -1,0 +1,9 @@
+{
+  "stadium_rows": 156,
+  "unique_venues": 36,
+  "required_yankees_venue_seasons": 111,
+  "missing": [],
+  "source_retrieved_date": "2026-11-08",
+  "definition": "Statcast-listed fence distances in feet; these can differ from posted signage. Each row comes from the selected season's Dimensions table.",
+  "special_case": "Journey Bank Ballpark 2024 uses club-published distances; no Savant yearly dimension row."
+}

@@ -1,0 +1,11 @@
+{
+  "scope": "NYY batting, 2021-2025, regular season",
+  "trial": false,
+  "scheduled_finished_games": 810,
+  "requested_games": 810,
+  "saved_games": 810,
+  "extracted_plate_appearances": 30685,
+  "home_runs": 1206,
+  "failures": [],
+  "note": "Extracted Statcast PA counts are not independently reconciled to official box scores. Stadium dimensions are not included."
+}
