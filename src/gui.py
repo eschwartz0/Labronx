@@ -109,6 +109,11 @@ class App(tk.Tk):
         self.stadium_dimensions = self._load_stadium_dimensions()
         self._build_topbar()
         self._build_header()
+        tk.Label(
+            self,
+            text="* Park factor is a measure of how a stadium affects offense, where 100 is average",
+            bg=BG, fg=MUTED, font=font(8), anchor="e",
+        ).pack(side="bottom", anchor="e", padx=14, pady=(0, 8))
         self._build_body()
 
     def _load_stadium_dimensions(self):
@@ -120,6 +125,7 @@ class App(tk.Tk):
                     "left": row["Left"].removesuffix(" ft"),
                     "center": row["Center"].removesuffix(" ft"),
                     "right": row["Right"].removesuffix(" ft"),
+                    "park_factor": (row.get("Park Factor") or "").strip(),
                 }
         return dimensions
 
@@ -215,12 +221,10 @@ class App(tk.Tk):
 
         self.stadium = StadiumCanvas(p)
 
-        self.wall_lbl = tk.Label(
-            p, text="Wall heights: LF -- / CF -- / RF -- ft", bg=BG, fg=MUTED,
+        self.park_factor_lbl = tk.Label(
+            p, text="Park factor*: --", bg=BG, fg=MUTED,
             font=font(8))
-        tk.Label(p, text="Dimensions for the selected year", bg=BG, fg=MUTED,
-                 font=font(8)).pack(side="bottom", pady=(0, 8))
-        self.wall_lbl.pack(side="bottom")
+        self.park_factor_lbl.pack(side="bottom")
         self.stadium.pack(fill="both", expand=True, padx=8)
 
     def _build_controls(self, body):
@@ -323,15 +327,15 @@ class App(tk.Tk):
         if selected_dimensions is None:
             self.stadium.set_dims()
             #placeholder text if no stadium is selected
-            self.wall_lbl.config(text="Wall heights: LF -- / CF -- / RF -- ft")
+            self.park_factor_lbl.config(text="Park factor: --")
             return
 
         left = selected_dimensions["left"]
         center = selected_dimensions["center"]
         right = selected_dimensions["right"]
         self.stadium.set_dims(left, center, right)
-        self.wall_lbl.config(
-            text=f"Wall heights: LF {left} / CF {center} / RF {right} ft")
+        park_factor = selected_dimensions["park_factor"] or "--"
+        self.park_factor_lbl.config(text=f"Park factor: {park_factor}")
 
 
 if __name__ == "__main__":

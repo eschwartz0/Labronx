@@ -1,31 +1,31 @@
-Ballpark,Left,Center,Right
-American Family Field,342 ft,400 ft,345 ft
-Angel Stadium,347 ft,396 ft,350 ft
-Busch Stadium,336 ft,400 ft,335 ft
-Oriole Park at Camden Yards,333 ft,400 ft,318 ft
-Chase Field,330 ft,407 ft,335 ft
-Citi Field,335 ft,408 ft,330 ft
-Citizens Bank Park,329 ft,401 ft,330 ft
-Comerica Park,342 ft,412 ft,330 ft
-Coors Field,347 ft,415 ft,350 ft
-Daikin Park,315 ft,399 ft,326 ft
-Dodger Stadium,330 ft,395 ft,330 ft
-Fenway Park,310 ft,389 ft,302 ft
-Globe Life Field,329 ft,407 ft,326 ft
-Great American Ball Park,328 ft,404 ft,325 ft
-Kauffman Stadium,330 ft,410 ft,330 ft
-loanDepot park,345 ft,400 ft,335 ft
-Nationals Park,336 ft,402 ft,335 ft
-Oracle Park,339 ft,391 ft,309 ft
-Petco Park,336 ft,396 ft,322 ft
-PNC Park,325 ft,399 ft,320 ft
-Progressive Field,325 ft,405 ft,325 ft
-Rate Field,330 ft,400 ft,335 ft
-Rogers Centre,328 ft,400 ft,328 ft
-Sutter Health Park,330 ft,403 ft,325 ft
-T-Mobile Park,331 ft,401 ft,326 ft
-Target Field,339 ft,404 ft,328 ft
-Tropicana Field,315 ft,404 ft,322 ft
-Truist Park,335 ft,400 ft,325 ft
-Wrigley Field,355 ft,400 ft,353 ft
-Yankee Stadium,318 ft,408 ft,314 ft
+Ballpark,Left,Center,Right,Park Factor
+American Family Field,342 ft,400 ft,345 ft,98
+Angel Stadium,347 ft,396 ft,350 ft,99
+Busch Stadium,336 ft,400 ft,335 ft,97
+Oriole Park at Camden Yards,333 ft,400 ft,318 ft,102
+Chase Field,330 ft,407 ft,335 ft,103
+Citi Field,335 ft,408 ft,330 ft,99
+Citizens Bank Park,329 ft,401 ft,330 ft,102
+Comerica Park,342 ft,412 ft,330 ft,100
+Coors Field,347 ft,415 ft,350 ft,112
+Daikin Park,315 ft,399 ft,326 ft,100
+Dodger Stadium,330 ft,395 ft,330 ft,101
+Fenway Park,310 ft,389 ft,302 ft,103
+Globe Life Field,329 ft,407 ft,326 ft,94
+Great American Ball Park,328 ft,404 ft,325 ft,101
+Kauffman Stadium,330 ft,410 ft,330 ft,102
+loanDepot park,345 ft,400 ft,335 ft,100
+Nationals Park,336 ft,402 ft,335 ft,102
+Oracle Park,339 ft,391 ft,309 ft,97
+Petco Park,336 ft,396 ft,322 ft,97
+PNC Park,325 ft,399 ft,320 ft,101
+Progressive Field,325 ft,405 ft,325 ft,98
+Rate Field,330 ft,400 ft,335 ft,99
+Rogers Centre,328 ft,400 ft,328 ft,101
+Sutter Health Park,330 ft,403 ft,325 ft,
+T-Mobile Park,331 ft,401 ft,326 ft,92
+Target Field,339 ft,404 ft,328 ft,103
+Tropicana Field,315 ft,404 ft,322 ft,97
+Truist Park,335 ft,400 ft,325 ft,100
+Wrigley Field,355 ft,400 ft,353 ft,98
+Yankee Stadium,318 ft,408 ft,314 ft,101
