@@ -1,4 +1,4 @@
-"""Native Tk regression check: changing filters refreshes charts without Analyze.
+"""Native Tk check: removed buttons stay absent and filters refresh the app.
 
 Run from the project root with a desktop-capable Python: python3 tests/gui_dynamic_smoke.py
 """
@@ -27,6 +27,16 @@ def main():
         assert app._refresh_after_id is None, 'Automatic refresh did not finish'
 
     try:
+        def widget_texts(widget):
+            if 'text' in widget.keys():
+                yield str(widget.cget('text'))
+            for child in widget.winfo_children():
+                yield from widget_texts(child)
+
+        texts = set(widget_texts(app))
+        assert 'Analyze' not in texts, 'Redundant Analyze control is still visible'
+        assert 'View Stadium' not in texts, 'Redundant View Stadium control is still visible'
+        print('PASS: Analyze and View Stadium controls are absent', flush=True)
         deadline = time.monotonic() + 45
         while app.analyzer is None and time.monotonic() < deadline:
             app.update()
@@ -53,6 +63,11 @@ def main():
             assert len(app.stadium_chart.figure.axes[0].patches) == min(7, len(expected['stadium_groups']))
             assert len(app.inning_chart.figure.axes[0].patches) == len(expected['inning_groups'])
             assert 'Both structures agree' in app.status.get()
+            filters = app._filters()
+            dimensions = app.stadium_dimensions.resolve(filters.stadium_id or 3313, filters.season)
+            assert (app.stadium.lf, app.stadium.cf, app.stadium.rf) == (
+                dimensions['Left'], dimensions['Center'], dimensions['Right'])
+            assert app._stadium_source_url == dimensions['dimensions_source_url']
             print(f'PASS: {key} automatically updates statistics and both chart canvases', flush=True)
         assert app.stat_vals['Home-run rate'].cget('text') == 'N/A'
         before = len(calls)

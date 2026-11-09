@@ -277,26 +277,9 @@ class App(tk.Tk):
         for var in self.vars.values():
             var.trace_add('write', self._on_filter_change)
 
-        # buttons
-        btns = tk.Frame(side, bg=BG)
-        btns.pack(fill="x", pady=(22, 20))
-        btns.columnconfigure(0, weight=1)
-        btns.columnconfigure(1, weight=1)
-
-        analyze = tk.Label(btns, text="Analyze", bg=FG, fg="white",
-                           font=font(10, "bold"), pady=11, cursor="hand2")
-        analyze.grid(row=0, column=0, sticky="ew", padx=(0, 4))
-        analyze.bind("<Button-1>", lambda e: self.on_analyze())
-
-        view = tk.Label(btns, text="View Stadium", bg=BG, fg=FG,
-                        font=font(9, "bold"), pady=10, cursor="hand2",
-                        highlightbackground=LINE, highlightthickness=2)
-        view.grid(row=0, column=1, sticky="ew", padx=(4, 0))
-        view.bind("<Button-1>", lambda e: self.on_view_stadium())
-
         # statistics
         tk.Label(side, text="Statistics", bg=BG, fg=FG,
-                 font=font(11, "bold"), anchor="w").pack(fill="x")
+                 font=font(11, "bold"), anchor="w").pack(fill="x", pady=(22, 0))
         stats = tk.Frame(side, bg=BG)
         stats.pack(fill="x", pady=(6, 0))
         stats.columnconfigure(0, weight=1)

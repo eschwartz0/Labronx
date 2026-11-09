@@ -49,20 +49,21 @@ Player and stadium menus use IDs behind readable names. Season menus contain onl
 the data's seasons plus All seasons. Extra innings come from the data. Batter side
 means the actual L/R side of the PA; a switch hitter can appear on either side.
 
-Analyze computes the selected historical HR/PA rate and sample size through both
+Analysis computes the selected historical HR/PA rate and sample size through both
 custom structures and refuses to show results if they disagree. Team average runs
 and percentage of innings with a HR use stadium/season/inning filters only, as stated
 in the window. Player and hand filters do not remove whole team innings.
 
-All six filters automatically refresh both charts and statistics after a short 100 ms
-coalescing delay; Analyze remains available for a manual refresh. Both charts honor
+All six filters automatically refresh both charts, statistics, and the stadium window
+after a short 100 ms coalescing delay. No Analyze or View Stadium button is needed.
+Both charts honor
 every selected PA filter, including stadium and inning. Selecting one stadium produces
 its matching bar; selecting one inning produces that inning's bar. The stadium chart
 shows up to seven matching venues ranked by sample size. Both charts include sample
 sizes, show zero HR correctly, and handle empty samples.
 
-Run `python3 tests/gui_dynamic_smoke.py` for the native regression check. It changes
-each filter without clicking Analyze, checks both chart canvases and statistics,
+Run `python3 tests/gui_dynamic_smoke.py` for the full-data native regression check. It changes
+each filter, checks both chart canvases and statistics,
 and verifies rapid changes coalesce into one query.
 
 ## Statistics
@@ -166,10 +167,20 @@ the bundled source-table JSON snapshots and game/venue metadata.
 
 ## Validation performed
 
-The original nine tests plus four data-asset tests verify collisions, resizing,
+The unittest suite has 27 tests. The original 13 backend/data-asset tests verify collisions, resizing,
 replacement, missing keys, tree invariants, 100,000 synthetic stress updates (never
 counted as real data), CSV conflict rejection, inning denominators, chart filtering,
 real-data totals, all 111 stadium/year joins, historical configuration changes,
 geometry changes, 181,818 unique real benchmark identities, and manifest tamper rejection.
-The native Tkinter smoke test covers actual player filters, chart refreshes, empty
-samples, historical stadium selections, source labels and the 100,000-record benchmark.
+Five additional chart tests verify sample ranking, seven-venue limits, selection
+colors, per-group rates, extra innings, zero-HR ranges, and stale-bar removal for
+empty selections. Nine GUI-handler tests use real Tcl variables/timers, the analyzer,
+Matplotlib figures, and stadium metadata with lightweight widget state holders.
+They cover initial loading, all six automatic filters, debounce, empty results,
+stadium/year refreshes, stale source-link removal, and load/query failures without
+requiring a graphical display.
+
+The separate native Tkinter smoke test covers actual player filters, chart refreshes,
+empty samples, stadium dimensions/source links, and the 100,000-record benchmark.
+It also verifies that neither removed button exists in the widget tree. Run it
+on a desktop before recording the demonstration video.
