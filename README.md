@@ -26,8 +26,12 @@ or View Stadium buttons; choose your filters to update the results.
 
 The benchmark also requires its bundled `preparation_report.json`, which validates
 CSV integrity and records official PA/HR reconciliation for all 30 teams. Each
-custom structure stores 181,818 distinct benchmark records. Yankees analysis uses
-the separate five-season dataset. Source snapshots and validation reports are bundled.
+custom structure stores 181,818 distinct benchmark records. 
+
+Yankees analysis uses
+the separate five-season dataset. 
+
+Source snapshots and validation reports are bundled.
 
 ## Check correctness
 
@@ -37,11 +41,10 @@ python3 src/analyzer.py --require-records 100000
 python3 tests/gui_dynamic_smoke.py
 ```
 
-The unittest suite includes 27 tests for data validation, both custom structures,
+This test suite includes 27 tests for both custom structures,
 chart output, and automatic filter/stadium updates. The filter tests use Tcl
 variables/timers without opening a window, so the suite needs no desktop session.
-The last command is a separate native Tk smoke test: it also verifies that the
-removed buttons are absent and needs a desktop session.
+
 On Windows, use `py` instead of `python3` for the commands above.
 
 See [implementation and data provenance](docs/IMPLEMENTATION.md)
