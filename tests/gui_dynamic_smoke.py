@@ -16,7 +16,6 @@ def main():
     if not (data / 'yankees_plate_appearances.csv').exists():
         data = Path('/Users/steven/PyCharmProjects/LaBronx/data/yankees_pa')
     app = App(data)
-    app.withdraw()
 
     def settle():
         deadline = time.monotonic() + 5
@@ -36,7 +35,8 @@ def main():
         texts = set(widget_texts(app))
         assert 'Analyze' not in texts, 'Redundant Analyze control is still visible'
         assert 'View Stadium' not in texts, 'Redundant View Stadium control is still visible'
-        print('PASS: Analyze and View Stadium controls are absent', flush=True)
+        assert '+' not in texts, 'Unused plus control is still visible'
+        print('PASS: Analyze, View Stadium, and plus controls are absent', flush=True)
         deadline = time.monotonic() + 45
         while app.analyzer is None and time.monotonic() < deadline:
             app.update()
@@ -78,6 +78,28 @@ def main():
         assert len(calls) == before + 1, 'Rapid changes should coalesce into one refresh'
         assert app._filters().season == 2024
         print('PASS: rapid filter changes coalesce into one query using the final selection', flush=True)
+
+        # Check real, mapped widget geometry; a withdrawn window cannot expose
+        # the clipped record text and collapsed canvas seen on scaled displays.
+        for size in ('1000x680', '1200x800'):
+            app.geometry(size)
+            app.update()
+            app.update_idletasks()
+            counts = app.record_label
+            self_bottom = counts.winfo_rooty() + counts.winfo_height()
+            panel_bottom = app.results_panel.winfo_rooty() + app.results_panel.winfo_height()
+            assert counts.winfo_height() >= counts.winfo_reqheight(), f'Record counts clipped at {size}'
+            assert self_bottom <= panel_bottom - 2, f'Record counts extend beyond panel at {size}'
+            assert counts.winfo_width() >= counts.winfo_reqwidth(), f'Record counts too wide at {size}'
+            for label in app.ds_vals.values():
+                assert label.winfo_width() >= label.winfo_reqwidth(), f'Benchmark value clipped at {size}'
+            assert app.stadium.winfo_height() >= 110, f'Stadium drawing collapsed at {size}'
+            boxes = [app.stadium.bbox(item) for item in app.stadium.find_withtag('distance_label')]
+            assert len(boxes) == 3, 'Missing field-distance labels'
+            boxes.sort(key=lambda box: box[0])
+            assert all(left[2] <= right[0] for left, right in zip(boxes, boxes[1:])), (
+                f'Field-distance labels overlap at {size}')
+            print(f'PASS: readable record counts, benchmark values, and stadium drawing at {size}', flush=True)
     finally:
         app.destroy()
 

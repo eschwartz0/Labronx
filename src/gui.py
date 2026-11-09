@@ -37,7 +37,11 @@ class PerformanceChart(tk.Frame):
         self.figure = make_figure()
         empty_chart(self.figure, 'Loading historical data…')
         self.canvas = FigureCanvasTkAgg(self.figure, master=self)
-        self.canvas.get_tk_widget().pack(fill='both', expand=True)
+        canvas_widget = self.canvas.get_tk_widget()
+        # The grid allocates chart space; a fixed Figure size must not squeeze
+        # the lower information panels on smaller or scaled Windows displays.
+        canvas_widget.configure(width=1, height=1)
+        canvas_widget.pack(fill='both', expand=True)
 
     def refresh(self):
         self.canvas.draw_idle()
@@ -45,7 +49,7 @@ class PerformanceChart(tk.Frame):
 
 class StadiumCanvas(tk.Canvas):
     def __init__(self, master):
-        super().__init__(master, bg=BG, highlightthickness=0, height=130)
+        super().__init__(master, bg=BG, highlightthickness=0, width=1, height=130)
         self.lf = self.cf = self.rf = "--"
         self.left_gap = self.right_gap = None
         self.bind("<Configure>", self.redraw)
@@ -66,23 +70,22 @@ class StadiumCanvas(tk.Canvas):
                                self.left_gap if known else None, self.right_gap if known else None)
         # A shared feet-to-pixels scale makes changes in distances visible. The five
         # rays are an illustrative profile, not the source's surveyed fence geometry.
-        scale = max(.01, min((w - 95) / 650, (h - 36) / 460))
+        scale = max(.01, min((w - 40) / 650, (h - 40) / 460))
         points = [(cx + x * scale, home_y - y * scale) for x, y in profile]
         wall = [coordinate for point in points for coordinate in point]
         self.create_polygon(cx, home_y, *wall, fill='#e1ddca', outline=LINE, width=1)
         self.create_line(*wall, fill=LINE, width=2, tags='fence')
-        left, right = points[0], points[-1]
         d = 90 * scale / 2 ** .5
         self.create_polygon(cx, home_y, cx - d, home_y - d, cx,
                             home_y - 2 * d, cx + d, home_y - d,
                             outline=LINE, fill="", width=1)
-        # labels
-        self.create_text(left[0], left[1] - 12, text=f"LF: {self.lf} ft",
-                         font=font(8), fill=FG)
-        self.create_text(right[0], right[1] - 12, text=f"RF: {self.rf} ft",
-                         font=font(8), fill=FG)
-        self.create_text(cx, max(points[2][1] - 12, 8), text=f"CF: {self.cf} ft",
-                         font=font(8), fill=FG)
+        # Fixed label columns remain separate when the field profile is small.
+        self.create_text(8, 6, text=f"LF {self.lf} ft", anchor='nw',
+                         font=font(7), fill=FG, tags='distance_label')
+        self.create_text(cx, 6, text=f"CF {self.cf} ft", anchor='n',
+                         font=font(7), fill=FG, tags='distance_label')
+        self.create_text(w - 8, 6, text=f"RF {self.rf} ft", anchor='ne',
+                         font=font(7), fill=FG, tags='distance_label')
 
 
 class App(tk.Tk):
@@ -111,15 +114,22 @@ class App(tk.Tk):
         self.stadium_dimensions = self._load_stadium_dimensions()
         self._build_topbar()
         self._build_header()
-        tk.Label(
-            self,
-            text="Historical results, not predictions. Stadium distances and park factors include source years.",
-            bg=BG, fg=MUTED, font=font(8), anchor="e",
-        ).pack(side="bottom", anchor="e", padx=14, pady=(0, 8))
-        self._build_body()
+        # Reserve the footer before allocating the expanding body.
+        footer = tk.Frame(self, bg=BG)
+        footer.pack(side='bottom', fill='x', padx=14, pady=(0, 8))
         self.status = tk.StringVar(value='Loading CSVs and comparing both data structures…')
-        tk.Label(self, textvariable=self.status, bg=BG, fg=MUTED, font=font(8),
-                 anchor='w', wraplength=950).pack(fill='x', padx=14, pady=(0, 5))
+        status_label = tk.Label(footer, textvariable=self.status, bg=BG, fg=MUTED,
+                               font=font(8), anchor='w', justify='left', wraplength=950)
+        status_label.pack(fill='x', pady=(0, 5))
+        notice = tk.Label(
+            footer,
+            text="Historical results, not predictions. Stadium distances and park factors include source years.",
+            bg=BG, fg=MUTED, font=font(8), anchor='w', justify='left', wraplength=950)
+        notice.pack(fill='x')
+        footer.bind('<Configure>', lambda event: (
+            status_label.configure(wraplength=max(1, event.width)),
+            notice.configure(wraplength=max(1, event.width))))
+        self._build_body()
         threading.Thread(target=self._load_backend, daemon=True).start()
         self.after(100, self._poll_backend)
 
@@ -139,26 +149,23 @@ class App(tk.Tk):
     def _build_header(self):
         head = tk.Frame(self, bg=BG)
         head.pack(fill="x", padx=14, pady=(14, 0))
-        head.columnconfigure(1, weight=1)
-
-        box = tk.Label(head, text="+", bg=BG, fg=FG, font=font(16),
-                       highlightbackground=LINE, highlightthickness=2,
-                       width=2)
-        box.grid(row=0, column=0, sticky="w")
+        head.columnconfigure(0, weight=1)
         tk.Label(head, text="Yankees Matchup Analyzer", bg=BG, fg=FG,
-                 font=font(13, "bold")).grid(row=0, column=1)
+                 font=font(13, "bold")).grid(row=0, column=0, sticky='w')
         tk.Label(head, text="2021-2025 regular seasons", bg=BG, fg=MUTED,
-                 font=font(9)).grid(row=0, column=2, sticky="e")
+                 font=font(9)).grid(row=0, column=1, sticky="e")
 
     # ------------------------------------------------------------- body
     def _build_body(self):
         body = tk.Frame(self, bg=BG)
-        body.pack(fill="both", expand=True, padx=34, pady=(26, 24))
+        body.pack(fill="both", expand=True, padx=18, pady=(18, 14))
         body.columnconfigure(0, weight=1, uniform="c")
         body.columnconfigure(1, weight=1, uniform="c")
         body.columnconfigure(2, weight=0, minsize=270)
-        body.rowconfigure(0, weight=3, uniform="r")
-        body.rowconfigure(1, weight=2, uniform="r")
+        body.rowconfigure(0, weight=1, minsize=180)
+        # Keep the lower panels at their requested content height. The charts
+        # take the remaining space instead of forcing a fixed 3:2 row ratio.
+        body.rowconfigure(1, weight=0)
 
         # chart panels
         p = Panel(body, "Performance by Stadium")
@@ -177,11 +184,13 @@ class App(tk.Tk):
 
     def _build_ds_panel(self, body):
         p = Panel(body, "Data-Structure Results")
+        self.results_panel = p
         p.grid(row=1, column=0, sticky="nsew", padx=(0, 8), pady=(8, 0))
 
         table = tk.Frame(p, bg=BG)
         table.pack(fill="x", padx=10)
-        table.columnconfigure(0, weight=1)
+        for column in range(3):
+            table.columnconfigure(column, weight=1)
         for c, t in enumerate(["Metric", "Hash table", "Red-black\ntree"]):
             tk.Label(table, text=t, bg=BG, fg=FG, font=font(8, "bold"),
                      anchor="w" if c == 0 else "center", justify="center"
@@ -190,22 +199,24 @@ class App(tk.Tk):
             row=1, column=0, columnspan=3, sticky="ew", pady=4)
 
         self.ds_vals = {}
-        for i, m in enumerate(["Construction time", "Lookup time",
-                               "Memory usage"]):
+        for i, (m, caption) in enumerate([("Construction time", "Build time"),
+                                           ("Lookup time", "Lookup time"),
+                                           ("Memory usage", "Memory")]):
             r = 2 + i
-            tk.Label(table, text=m, bg=BG, fg=FG, font=font(8), anchor="w"
+            tk.Label(table, text=caption, bg=BG, fg=FG, font=font(8), anchor="w"
                      ).grid(row=r, column=0, sticky="w", padx=4, pady=5)
             for c in (1, 2):
                 lbl = tk.Label(table, text="--", bg=BG, fg=MUTED,
-                               font=font(8), width=9)
-                lbl.grid(row=r, column=c)
+                               font=font(8))
+                lbl.grid(row=r, column=c, sticky='ew', padx=4)
                 self.ds_vals[(m, c)] = lbl
 
-        self.record_label = tk.Label(p, text="Loading actual record counts…", bg=BG, fg=MUTED,
-                                    font=font(7), anchor="w", justify='left', wraplength=290)
-        self.record_label.pack(side="bottom", fill="x", padx=10, pady=8)
-        tk.Frame(p, bg="#b8ae9a", height=1).pack(side="bottom", fill="x",
-                                                 padx=10)
+        tk.Frame(p, bg="#b8ae9a", height=1).pack(fill='x', padx=10, pady=(8, 0))
+        self.record_label = tk.Label(p, text="Loading record counts…", bg=BG, fg=MUTED,
+                                    font=font(8), anchor='nw', justify='left', wraplength=270)
+        self.record_label.pack(fill='x', padx=10, pady=(8, 10))
+        p.bind('<Configure>', lambda event: self.record_label.configure(
+            wraplength=max(1, event.width - 24)))
 
     def _build_stadium_panel(self, body):
         p = Panel(body, "Stadium Window")
@@ -226,6 +237,9 @@ class App(tk.Tk):
         self.stadium_source_lbl = tk.Label(p, text='', bg=BG, fg=MUTED, font=font(7),
                                            cursor='hand2', wraplength=270)
         self.stadium_source_lbl.pack(side='bottom', fill='x')
+        p.bind('<Configure>', lambda event: [label.configure(wraplength=max(1, event.width - 24))
+                                             for label in (self.stadium_lbl, self.park_factor_lbl,
+                                                           self.stadium_source_lbl)])
         self._stadium_source_url = self._factor_source_url = None
         self.stadium_source_lbl.bind('<Button-1>', lambda event: self._open_source(self._stadium_source_url))
         self.park_factor_lbl.bind('<Button-1>', lambda event: self._open_source(self._factor_source_url))
@@ -385,10 +399,12 @@ class App(tk.Tk):
             self.ds_vals[('Memory usage', column)].config(text=f"{metrics['memory_bytes'] / 1048576:.2f} MiB")
         metrics = result.metrics
         if metrics.get('meets_100000_stored_entries'):
-            counts = (f"MLB 2021 benchmark: {metrics['input_records']:,} PAs / keys\n"
-                      f"Yankees app: {len(dataset.entries):,} PAs · {len(result.hash_table):,} summaries")
+            counts = (f"MLB 2021: {metrics['input_records']:,} PA records\n"
+                      f"Yankees 2021–25: {len(dataset.entries):,} PAs\n"
+                      f"Yankees index: {len(result.hash_table):,} summaries")
         else:
-            counts = f"{metrics['input_records']:,} input PAs · {metrics['unique_keys']:,} keys"
+            counts = (f"Input: {metrics['input_records']:,} PAs\n"
+                      f"Index: {metrics['unique_keys']:,} summaries")
         self.record_label.config(text=counts)
         self.on_analyze()
 
