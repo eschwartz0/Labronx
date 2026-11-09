@@ -12,7 +12,8 @@ python3 src/gui.py
 
 Use a Python interpreter with Tkinter available. The data is bundled; running the
 app requires no Statcast download. Changing a filter refreshes both charts and
-statistics automatically.
+statistics automatically, including the stadium preview. There are no Analyze
+or View Stadium buttons; choose your filters to update the results.
 
 ## Bundled application data
 
@@ -36,7 +37,14 @@ python3 src/analyzer.py --require-records 100000
 python3 tests/gui_dynamic_smoke.py
 ```
 
-The last command needs a desktop session. See [implementation and data provenance](docs/IMPLEMENTATION.md)
+The unittest suite includes 27 tests for data validation, both custom structures,
+chart output, and automatic filter/stadium updates. The filter tests use Tcl
+variables/timers without opening a window, so the suite needs no desktop session.
+The last command is a separate native Tk smoke test: it also verifies that the
+removed buttons are absent and needs a desktop session.
+On Windows, use `py` instead of `python3` for the commands above.
+
+See [implementation and data provenance](docs/IMPLEMENTATION.md)
 for key definitions, statistics, measurement methods, and stadium sources.
 
 `src/example.py` and `data/example_summaries.csv` are an explicitly fictional format
